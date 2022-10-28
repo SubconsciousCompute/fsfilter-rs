@@ -44,6 +44,9 @@ pub struct IOMessage {
 }
 ```
 
+We end the process using `ctrl + c` in the example video:
+![video](readme_resources/example.gif)
+
 ## PERFORMANCE
 
 The performance of the minifilter doesn't really exceed `<1%` of the CPU usage (I never saw it tickle even to 1% while
