@@ -2,7 +2,7 @@
 
 [![Rust](https://github.com/sn99/fsfilter-rs/actions/workflows/rust.yml/badge.svg)](https://github.com/sn99/fsfilter-rs/actions/workflows/rust.yml)
 
-A rust library to monitor filesystem and more in windows
+A rust library to monitor filesystem and more in windows.
 
 Prepared as part of ongoing thesis work at uni.
 
@@ -13,14 +13,16 @@ Prepared as part of ongoing thesis work at uni.
 See [MINIFILTER.md](MINIFILTER.md) for building the minifilter or just [right click install using the `.inf` file
 provided in releases](https://github.com/sn99/fsfilter-rs/releases/latest/download/snFilter.zip).
 
-**NOTE: By default it is built for Windows 10 and above**
+**NOTE: By default it is built for Windows 10 and above.**
 
-**NOTE: Enable Loading of Test Signed Drivers by executing `Bcdedit.exe -set TESTSIGNING ON` in administrative cmd**
+**NOTE: Enable Loading of Test Signed Drivers by executing `Bcdedit.exe -set TESTSIGNING ON` in administrative cmd.**
 
 ### RUNNING EXAMPLE
 
-Use `cargo run --bin minifilter --release` to run the example application. The program starts to print the `IOMessage`
-which is defined like:
+Use `cargo run --bin minifilter --release` to run the example application or just [run the `.exe` provided in 
+releases](https://github.com/sn99/fsfilter-rs/releases/latest/download/minifilter.exe).
+
+The program starts to print the `IOMessage` which is defined like:
 
 ```rust
 #[repr(C)]
@@ -44,10 +46,10 @@ pub struct IOMessage {
 
 ## PERFORMANCE
 
-The performance of the minifilter doesn't really exceed `1%` of the CPU usage (I never saw it tickle even to 1% while
+The performance of the minifilter doesn't really exceed `<1%` of the CPU usage (I never saw it tickle even to 1% while
 running scripts to make multiple temporary files). Although depending on you console if you try running
-`cargo run --bin minifilter` you might see spikes reaching `1-3%` but that is because of the console itself (comment out
-the `writeln!` in the bin example).
+`cargo run --bin minifilter --release` you might see spikes reaching `1-3%` but that is because of the console itself (comment out
+the `writeln!` in the bin example) or try changing consoles (maybe run `minifilter.exe` directly).
 
 ## LICENSE
 
