@@ -1,0 +1,43 @@
+[package]
+name = "fsfilter-rs"
+version = "0.3.0"
+edition = "2021"
+authors = ["sn99 <siddharthn.099@gmail.com>"]
+description = "A rust library to monitor filesystem and more in windows"
+repository = "https://github.com/sn99/fsfilter-rs"
+license = "MIT"
+readme = "README.md"
+keywords = ["filesystem", "driver", "windows", "minifilter", "syscalls"]
+documentation = "https://docs.rs/fsfilter-rs"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+sysinfo = "0.26.4"
+widestring = "1.0.1"
+serde_json = "1.0.68"
+serde = { version = "1.0.130", features = ["derive"] }
+num = "0.4"
+num-derive = "0.3"
+num-traits = "0.2.14"
+strum = "0.24.1"
+strum_macros = "0.24.3"
+wchar = "0.11.0"
+kodama = "0.2.3"
+
+[dependencies.windows]
+version = "0.43.0"
+features = [
+    "Win32_Storage_InstallableFileSystems",
+    "Win32_Foundation",
+    "Win32_Security",
+    "Win32_Storage_FileSystem",
+    "Win32_System_Threading",
+    "Win32_System_ProcessStatus",
+    "Win32_System_Diagnostics_Debug",
+]
+
+[profile.release]
+lto = true
+codegen-units = 1
+opt-level = 3
