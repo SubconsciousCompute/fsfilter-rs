@@ -56,6 +56,7 @@ pub struct ReplyIrp {
 
 impl ReplyIrp {
     /// Iterate through ```self.data``` and returns the collection of [`CDriverMsg`]
+    #[inline]
     fn unpack_drivermsg(&self) -> Vec<&CDriverMsg> {
         let mut res = vec![];
         unsafe {
@@ -102,6 +103,7 @@ impl UnicodeString {
     */
 
     /// Get the file path from the UnicodeString path and the extension returned by the driver.
+    #[inline]
     pub fn to_string_ext(&self, extension: [wchar_t; 12]) -> String {
         unsafe {
             let str_slice = std::slice::from_raw_parts(self.buffer, self.length as usize);
@@ -136,7 +138,7 @@ impl UnicodeString {
                         &str_slice[..last_dot_index],
                         &extension[..first_zero_index_ext],
                     ]
-                        .concat(),
+                    .concat(),
                 )
             } else {
                 String::from_utf16_lossy(&str_slice[..first_zero_index])
@@ -146,6 +148,7 @@ impl UnicodeString {
 }
 
 impl fmt::Display for UnicodeString {
+    #[inline]
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         unsafe {
             let str_slice = std::slice::from_raw_parts(self.buffer, self.length as usize);
@@ -219,6 +222,7 @@ pub struct IOMessage {
 }
 
 impl IOMessage {
+    #[inline]
     pub fn from(c_drivermsg: &CDriverMsg) -> IOMessage {
         IOMessage {
             extension: c_drivermsg.extension,
@@ -237,7 +241,7 @@ impl IOMessage {
             file_size: match PathBuf::from(
                 &c_drivermsg.filepath.to_string_ext(c_drivermsg.extension),
             )
-                .metadata()
+            .metadata()
             {
                 Ok(f) => f.len() as i64,
                 Err(_e) => -1,
@@ -245,6 +249,7 @@ impl IOMessage {
         }
     }
 
+    #[inline]
     pub fn exepath(&mut self) {
         let pid = self.pid as u32;
         unsafe {
@@ -283,6 +288,7 @@ pub struct RuntimeFeatures {
 }
 
 impl RuntimeFeatures {
+    #[inline]
     pub fn new() -> RuntimeFeatures {
         RuntimeFeatures {
             exepath: PathBuf::new(),
@@ -292,6 +298,7 @@ impl RuntimeFeatures {
 }
 
 impl Default for RuntimeFeatures {
+    #[inline]
     fn default() -> Self {
         Self::new()
     }
@@ -329,6 +336,7 @@ pub struct CDriverMsgs<'a> {
 }
 
 impl CDriverMsgs<'_> {
+    #[inline]
     pub fn new(irp: &ReplyIrp) -> CDriverMsgs {
         CDriverMsgs {
             drivermsgs: irp.unpack_drivermsg(),
@@ -340,6 +348,7 @@ impl CDriverMsgs<'_> {
 impl Iterator for CDriverMsgs<'_> {
     type Item = CDriverMsg;
 
+    #[inline]
     fn next(&mut self) -> Option<Self::Item> {
         if self.index == self.drivermsgs.len() {
             None

@@ -66,11 +66,13 @@ impl Driver {
     /// Can be used to properly close the communication (and unregister) with the minifilter.
     /// If this fn is not used and the program has stopped, the handle is automatically closed,
     /// seemingly without any side-effects.
+    #[inline]
     pub fn close_kernel_communication(&self) -> bool {
         unsafe { CloseHandle(self.handle).as_bool() }
     }
 
     /// The user-mode running app (this one) has to register itself to the driver.
+    #[inline]
     pub fn driver_set_app_pid(&self) -> Result<(), windows::core::Error> {
         let buf = Driver::string_to_commessage_buffer(r"\Device\harddiskVolume");
 
@@ -101,6 +103,7 @@ impl Driver {
     /// * if a connection is already established: it can accepts only one at a time.
     ///
     /// In that case the Error is raised by the OS (windows::Error) and is generally readable.
+    #[inline]
     pub fn open_kernel_driver_com() -> Result<Driver, windows::core::Error> {
         let _com_port_name = U16CString::from_str("\\snFilter").unwrap().into_raw();
         let _handle;
@@ -114,6 +117,7 @@ impl Driver {
     /// Ask the driver for a [ReplyIrp], if any. This is a low-level function and the returned object
     /// uses C pointers. Managing C pointers requires a special care, because of the Rust timelines.
     /// [ReplyIrp] is optional since the minifilter returns null if there is no new activity.
+    #[inline]
     pub fn get_irp(&self, vecnew: &mut Vec<u8>) -> Option<ReplyIrp> {
         let mut get_irp_msg = Driver::build_irp_msg(
             DriverComMessageType::GetOps,
@@ -147,6 +151,7 @@ impl Driver {
 
     /// Ask the minifilter to kill all pids related to the given *gid*. Pids are killed in driver-mode
     /// by calls to NtClose.
+    #[inline]
     pub fn try_kill(&self, gid: c_ulonglong) -> Result<HRESULT, windows::core::Error> {
         let mut killmsg = DriverComMessage {
             r#type: DriverComMessageType::KillGid as c_ulong,
@@ -171,6 +176,7 @@ impl Driver {
         Ok(HRESULT(res))
     }
 
+    #[inline]
     fn string_to_commessage_buffer(bufstr: &str) -> BufPath {
         let temp = U16CString::from_str(&bufstr).unwrap();
         let mut buf: BufPath = [0; 520];
@@ -181,6 +187,7 @@ impl Driver {
     }
 
     // TODO: move to ComMessage?
+    #[inline]
     fn build_irp_msg(
         commsgtype: DriverComMessageType,
         pid: Pid,
@@ -250,6 +257,7 @@ pub enum DriveType {
 }
 
 impl DriveType {
+    #[inline]
     pub fn from_filepath(filepath: String) -> DriveType {
         let mut drive_type = 1u32;
         if !filepath.is_empty() {

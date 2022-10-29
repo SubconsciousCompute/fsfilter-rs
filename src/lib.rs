@@ -1,5 +1,7 @@
 //! # minifilter-rs
 //!
+//! Checkout the [README](https://github.com/sn99/fsfilter-rs/blob/master/README.md) too at github.
+//!
 //! **Use `cargo doc --no-deps --document-private-items --open` to read Documentation**
 //!
 //! ## Table of Contents

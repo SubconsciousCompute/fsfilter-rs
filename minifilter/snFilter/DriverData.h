@@ -7,13 +7,14 @@
 #include "KernelString.h"
 
 /* DriverData: shared class across driver, hold driver D.S. */
-class DriverData {
+class DriverData
+{
     BOOLEAN FilterRun; // true if filter currently runs
     PFLT_FILTER Filter;
     PDRIVER_OBJECT DriverObject;                // internal
     WCHAR systemRootPath[MAX_FILE_NAME_LENGTH]; // system root path, help analyze image files loaded
     ULONG
-            pid; // pid of the current connected user mode application, set by communication
+    pid; // pid of the current connected user mode application, set by communication
 
     ULONG irpOpsSize;      // number of irp ops waiting in entry_list
     LIST_ENTRY irpOps;     // list entry bidirectional list of irp ops
@@ -25,32 +26,34 @@ class DriverData {
 
     /* GID system data members */
     ULONGLONG
-            GidCounter;          // internal counter for gid, every new application receives a new gid
+    GidCounter;          // internal counter for gid, every new application receives a new gid
     HashMap GidToPids;   // mapping from gid to pids
     HashMap PidToGids;   // mapping from pid to gid
     ULONGLONG gidsSize;  // number of gids currently active
     LIST_ENTRY GidsList; // list entry of gids, used to clear memory
     KSPIN_LOCK GIDSystemLock;
 
-private:
+  private:
     // call assumes protected code - high IRQL
     BOOLEAN RemoveProcessRecordAux(ULONG ProcessId, ULONGLONG gid);
 
     // call assumes protected code - high IRQL
     BOOLEAN RemoveGidRecordAux(PGID_ENTRY gidRecord);
 
-public:
+  public:
     // c'tor init D.S.
     explicit DriverData(PDRIVER_OBJECT DriverObject);
 
     ~DriverData();
 
-    PWCHAR GetSystemRootPath() {
+    PWCHAR GetSystemRootPath()
+    {
         return systemRootPath;
     }
 
     // sets the system root path, received from user mode application, we copy the systemRootPath sent on the message
-    VOID setSystemRootPath(PWCHAR setsystemRootPath) {
+    VOID setSystemRootPath(PWCHAR setsystemRootPath)
+    {
         RtlZeroBytes(systemRootPath, MAX_FILE_NAME_SIZE);
         RtlCopyBytes(systemRootPath, setsystemRootPath, MAX_FILE_NAME_LENGTH);
         RtlCopyBytes(systemRootPath + wcsnlen(systemRootPath, MAX_FILE_NAME_LENGTH / 2), L"\\Windows",
@@ -81,31 +84,38 @@ public:
 
     ULONGLONG GidsSize();
 
-    BOOLEAN setFilterStart() {
+    BOOLEAN setFilterStart()
+    {
         return (FilterRun = TRUE);
     }
 
-    BOOLEAN setFilterStop() {
+    BOOLEAN setFilterStop()
+    {
         return (FilterRun = FALSE);
     }
 
-    BOOLEAN isFilterClosed() {
+    BOOLEAN isFilterClosed()
+    {
         return !FilterRun;
     }
 
-    PFLT_FILTER *getFilterAdd() {
+    PFLT_FILTER *getFilterAdd()
+    {
         return &Filter;
     }
 
-    PFLT_FILTER getFilter() {
+    PFLT_FILTER getFilter()
+    {
         return Filter;
     }
 
-    ULONG getPID() {
+    ULONG getPID()
+    {
         return pid;
     }
 
-    ULONG setPID(ULONG Pid) {
+    ULONG setPID(ULONG Pid)
+    {
         pid = Pid;
         return Pid;
     }
@@ -139,7 +149,8 @@ public:
 
     VOID ClearDirectories();
 
-    VOID Clear() {
+    VOID Clear()
+    {
         // clear directories
         ClearDirectories();
 

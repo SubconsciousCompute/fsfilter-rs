@@ -15,51 +15,59 @@
 
 // PID_ENTRY - for each process in the system we record, we get its pid and image file, those are stored in thi struct
 // the struct is meant to be used in blist (LIST_ENTRY)
-typedef struct _PID_ENTRY {
+typedef struct _PID_ENTRY
+{
     LIST_ENTRY entry;
     PUNICODE_STRING Path;
     ULONG Pid;
 
-    _PID_ENTRY() {
+    _PID_ENTRY()
+    {
         Pid = 0;
         Path = nullptr;
         entry.Flink = nullptr;
         entry.Blink = nullptr;
     }
 
-    void *operator new(size_t size) {
+    void *operator new(size_t size)
+    {
         void *ptr = ExAllocatePool2(POOL_FLAG_NON_PAGED, size, 'RW');
         if (size && ptr != nullptr)
             memset(ptr, 0, size);
         return ptr;
     }
 
-    void operator delete(void *ptr) {
+    void operator delete(void *ptr)
+    {
         ExFreePoolWithTag(ptr, 'RW');
     }
 
     // fixme needs new and delete operator, dtor
 } PID_ENTRY, *PPID_ENTRY;
 
-typedef struct _DIRECTORY_ENTRY {
+typedef struct _DIRECTORY_ENTRY
+{
     LIST_ENTRY entry;
     WCHAR path[MAX_FILE_NAME_LENGTH];
 
-    _DIRECTORY_ENTRY() {
+    _DIRECTORY_ENTRY()
+    {
         InitializeListHead(&entry);
         path[0] = L'\0';
     }
 
 } DIRECTORY_ENTRY, *PDIRECTORY_ENTRY;
 
-typedef struct _IRP_ENTRY {
+typedef struct _IRP_ENTRY
+{
     LIST_ENTRY entry;
     DRIVER_MESSAGE data;
     UNICODE_STRING
-            filePath;                           // keep path to unicode string related to the object, we copy it later to user
+    filePath;                           // keep path to unicode string related to the object, we copy it later to user
     WCHAR Buffer[MAX_FILE_NAME_LENGTH]; // unicode string buffer for file name
 
-    _IRP_ENTRY() {
+    _IRP_ENTRY()
+    {
         filePath.Length = 0;
         filePath.MaximumLength = MAX_FILE_NAME_SIZE;
         filePath.Buffer = Buffer;
@@ -72,14 +80,16 @@ typedef struct _IRP_ENTRY {
         data.FileLocationInfo = FILE_NOT_PROTECTED;
     }
 
-    void *operator new(size_t size) {
+    void *operator new(size_t size)
+    {
         void *ptr = ExAllocatePool2(POOL_FLAG_NON_PAGED, size, 'RW');
         if (size && ptr != nullptr)
             memset(ptr, 0, size);
         return ptr;
     }
 
-    void operator delete(void *ptr) {
+    void operator delete(void *ptr)
+    {
         ExFreePoolWithTag(ptr, 'RW');
     }
 
@@ -99,14 +109,16 @@ BOOLEAN startsWith(PUNICODE_STRING String, PWCHAR Pattern);
 
 // GID_ENTRY - for each gid in the system we record, holds pids entries (PID_ENTRY)
 // the struct is meant to be used in blist (LIST_ENTRY)
-struct GID_ENTRY {
+struct GID_ENTRY
+{
     LIST_ENTRY GidListEntry;
     ULONGLONG gid;
     ULONGLONG pidsSize;
     LIST_ENTRY HeadListPids;
 
     // gid as input
-    GID_ENTRY(ULONGLONG Gid) {
+    GID_ENTRY(ULONGLONG Gid)
+    {
         gid = Gid;
         InitializeListHead(&HeadListPids);
         InitializeListHead(&GidListEntry);
@@ -114,7 +126,8 @@ struct GID_ENTRY {
     }
 
     // copy
-    GID_ENTRY(const GID_ENTRY &a) {
+    GID_ENTRY(const GID_ENTRY &a)
+    {
         HeadListPids.Flink = a.HeadListPids.Flink;
         HeadListPids.Blink = a.HeadListPids.Blink;
         GidListEntry.Flink = a.GidListEntry.Flink;
@@ -123,7 +136,8 @@ struct GID_ENTRY {
         pidsSize = a.pidsSize;
     }
 
-    const GID_ENTRY &operator=(const GID_ENTRY &a) {
+    const GID_ENTRY &operator=(const GID_ENTRY &a)
+    {
         HeadListPids.Flink = a.HeadListPids.Flink;
         HeadListPids.Blink = a.HeadListPids.Blink;
         GidListEntry.Flink = a.GidListEntry.Flink;

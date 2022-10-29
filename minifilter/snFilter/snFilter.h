@@ -40,7 +40,7 @@ FLT_PREOP_CALLBACK_STATUS
 FSPreOperation(_Inout_ PFLT_CALLBACK_DATA Data, _In_ PCFLT_RELATED_OBJECTS FltObjects,
                _Flt_CompletionContext_Outptr_ PVOID
 
-*CompletionContext);
+                   *CompletionContext);
 
 NTSTATUS
 FSInstanceSetup(_In_ PCFLT_RELATED_OBJECTS FltObjects, _In_ FLT_INSTANCE_SETUP_FLAGS Flags,
@@ -58,7 +58,7 @@ NTSTATUS
 FSProcessPreOperartion(_Inout_ PFLT_CALLBACK_DATA Data, _In_ PCFLT_RELATED_OBJECTS FltObjects,
                        _Flt_CompletionContext_Outptr_ PVOID
 
-*CompletionContext);
+                           *CompletionContext);
 
 NTSTATUS
 FSEntrySetFileName(const PFLT_VOLUME volume, PFLT_FILE_NAME_INFORMATION nameInfo, PUNICODE_STRING uString);
@@ -104,9 +104,6 @@ VOID CopyExtension(PWCHAR dest, PFLT_FILE_NAME_INFORMATION nameInfo);
 // if parent doesn't have a gid and both are system process, new process isn't recorded
 // else we create a new gid for process
 
-VOID AddRemProcessRoutine(HANDLE
-ParentId,
-HANDLE ProcessId, BOOLEAN
-Create);
+VOID AddRemProcessRoutine(HANDLE ParentId, HANDLE ProcessId, BOOLEAN Create);
 
 UNICODE_STRING GvolumeData;

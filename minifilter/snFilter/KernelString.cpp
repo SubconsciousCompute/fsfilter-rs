@@ -22,9 +22,10 @@ Return Value:
 
 --*/
 {
-    String->Buffer = (PWCH) ExAllocatePool2(POOL_FLAG_NON_PAGED, String->MaximumLength, 'RW');
+    String->Buffer = (PWCH)ExAllocatePool2(POOL_FLAG_NON_PAGED, String->MaximumLength, 'RW');
 
-    if (String->Buffer == NULL) {
+    if (String->Buffer == NULL)
+    {
         return STATUS_INSUFFICIENT_RESOURCES;
     }
 
@@ -50,7 +51,8 @@ Return Value:
 
 --*/
 {
-    if (String->Buffer) {
+    if (String->Buffer)
+    {
         ExFreePoolWithTag(String->Buffer, 'RW');
         String->Buffer = NULL;
     }

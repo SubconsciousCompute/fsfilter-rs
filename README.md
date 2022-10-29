@@ -1,6 +1,7 @@
 # fsfilter-rs
 
 [![Rust](https://github.com/sn99/fsfilter-rs/actions/workflows/rust.yml/badge.svg)](https://github.com/sn99/fsfilter-rs/actions/workflows/rust.yml)
+[![Crates.io](https://img.shields.io/crates/v/fsfilter-rs?style=flat-square)](https://crates.io/crates/fsfilter-rs)
 
 A rust library to monitor filesystem and more in windows
 

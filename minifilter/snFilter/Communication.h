@@ -6,7 +6,8 @@
 #include "../SharedDefs/SharedDefs.h"
 #include "DriverData.h"
 
-struct CommHandler {
+struct CommHandler
+{
     //  Server-side communicate ports.
     PFLT_PORT ServerPort;
 
@@ -24,7 +25,8 @@ struct CommHandler {
     ULONG UserProcess;
 
     CommHandler(PFLT_FILTER Filter)
-            : ServerPort(NULL), ClientPort(NULL), Filter(Filter), CommClosed(TRUE), UserProcess(0) {
+        : ServerPort(NULL), ClientPort(NULL), Filter(Filter), CommClosed(TRUE), UserProcess(0)
+    {
     }
 };
 
@@ -44,7 +46,7 @@ RWFConnect(_In_ PFLT_PORT ClientPort, _In_opt_ PVOID ServerPortCookie,
            _In_reads_bytes_opt_(SizeOfContext) PVOID ConnectionContext, _In_ ULONG SizeOfContext,
            _Outptr_result_maybenull_ PVOID
 
-*ConnectionCookie);
+               *ConnectionCookie);
 
 // AMFConnect: handle messages received from user mode
 

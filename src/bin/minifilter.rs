@@ -27,7 +27,9 @@ fn main() {
                     }
                 }
             } else {
-                thread::sleep(Duration::from_millis(5));
+                // Don't use "continue" as jump statements are expensive "if reply_irp.num_ops > 0"
+                // continue;
+                thread::sleep(Duration::from_millis(2));
             }
         } else {
             panic!("Can't receive Driver Message?");
@@ -39,7 +41,7 @@ fn main() {
         loop {
             if let Ok(mut io_message) = rx_iomsgs.recv() {
                 io_message.exepath();
-                writeln!(lock, "{:?}", io_message);
+                write!(lock, "{:?}", io_message);
             }
         }
     }
