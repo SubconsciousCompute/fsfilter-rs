@@ -1,18 +1,18 @@
 # fsfilter-rs
 
-[![Rust](https://github.com/sn99/fsfilter-rs/actions/workflows/rust.yml/badge.svg)](https://github.com/sn99/fsfilter-rs/actions/workflows/rust.yml)
+[![Rust](https://github.com/SubconsciousCompute/fsfilter-rs/actions/workflows/rust.yml/badge.svg)](https://github.com/SubconsciousCompute/fsfilter-rs/actions/workflows/rust.yml)
 [![Crates.io](https://img.shields.io/crates/v/fsfilter-rs?style=flat-square)](https://crates.io/crates/fsfilter-rs)
 
 A rust library to monitor filesystem and more in windows.
-
-Prepared as part of ongoing thesis work at uni.
 
 ![shared_def](readme_resources/shared_def.png)
 
 ### MINIFILTER
 
 See [MINIFILTER.md](MINIFILTER.md) for building the minifilter or just [right click install using the `.inf` file
-provided in releases](https://github.com/sn99/fsfilter-rs/releases/latest/download/snFilter.zip).
+provided in releases](https://github.com/SubconsciousCompute/fsfilter-rs/releases/latest/download/snFilter.zip).
+
+You can also build using [EWDK](EWDKbuild.md) if you don't want to install Visual Studio, SDK and WDK.
 
 **NOTE: By default it is built for Windows 10 and above.**
 
@@ -20,8 +20,8 @@ provided in releases](https://github.com/sn99/fsfilter-rs/releases/latest/downlo
 
 ### RUNNING EXAMPLE
 
-Use `cargo run --bin minifilter --release` to run the example application or just [run the `.exe` provided in 
-releases](https://github.com/sn99/fsfilter-rs/releases/latest/download/minifilter.exe).
+Use `cargo run --bin minifilter --release` to run the example application or just [run the `.exe` provided in
+releases](https://github.com/SubconsciousCompute/fsfilter-rs/releases/latest/download/minifilter.exe).
 
 The program starts to print the `IOMessage` which is defined like:
 
@@ -52,8 +52,8 @@ We end the process using `ctrl + c` in the example video:
 
 The performance of the minifilter doesn't really exceed `<1%` of the CPU usage (I never saw it tickle even to 1% while
 running scripts to make multiple temporary files). Although depending on you console if you try running
-`cargo run --bin minifilter --release` you might see spikes reaching `1-3%` but that is because of the console itself (comment out
-the `writeln!` in the bin example) or try changing consoles (maybe run `minifilter.exe` directly).
+`cargo run --bin minifilter --release` you might see spikes reaching `1-3%` but that is because of the console itself (
+comment out the `writeln!` in the bin example) or try changing consoles (maybe run `minifilter.exe` directly).
 
 ## LICENSE
 
