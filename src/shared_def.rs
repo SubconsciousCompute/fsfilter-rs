@@ -40,9 +40,9 @@ pub enum FileLocationInfo {
 }
 
 /// Low-level C-like object to communicate with the minifilter.
-/// The minifilter yields ReplyIrp objects (retrieved by [`get_irp`](crate::driver_comm::Driver::get_irp) to
+/// The minifilter yields `ReplyIrp` objects (retrieved by [`get_irp`](crate::driver_comm::Driver::get_irp) to
 /// manage the fixed size of the *data buffer.
-/// In other words, a ReplyIrp is a collection of [`CDriverMsg`] with a capped size.
+/// In other words, a `ReplyIrp` is a collection of [`CDriverMsg`] with a capped size.
 #[derive(Debug, Copy, Clone)]
 #[repr(C)]
 pub struct ReplyIrp {
@@ -55,7 +55,7 @@ pub struct ReplyIrp {
 }
 
 impl ReplyIrp {
-    /// Iterate through ```self.data``` and returns the collection of [`CDriverMsg`]
+    /// Iterate through `self.data` and returns the collection of [`CDriverMsg`]
     #[inline]
     fn unpack_drivermsg(&self) -> Vec<&CDriverMsg> {
         let mut res = vec![];
@@ -102,7 +102,7 @@ impl UnicodeString {
     }
     */
 
-    /// Get the file path from the UnicodeString path and the extension returned by the driver.
+    /// Get the file path from the `UnicodeString` path and the extension returned by the driver.
     #[inline]
     pub fn to_string_ext(&self, extension: [wchar_t; 12]) -> String {
         unsafe {
@@ -222,9 +222,10 @@ pub struct IOMessage {
 }
 
 impl IOMessage {
+    /// Make a new [`IOMessage`] from a received [`CDriverMsg`]
     #[inline]
-    pub fn from(c_drivermsg: &CDriverMsg) -> IOMessage {
-        IOMessage {
+    pub fn from(c_drivermsg: &CDriverMsg) -> Self {
+        Self {
             extension: c_drivermsg.extension,
             file_id_vsn: c_drivermsg.file_id.VolumeSerialNumber,
             file_id_id: c_drivermsg.file_id.FileId.Identifier,
@@ -249,9 +250,11 @@ impl IOMessage {
         }
     }
 
+    /// Opens an existing local process object to retrieve the name of the executable file for the
+    /// specified process.
     #[inline]
     pub fn exepath(&mut self) {
-        let pid = self.pid as u32;
+        let pid = self.pid;
         unsafe {
             let r_handle = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, false, pid);
             if let Ok(handle) = r_handle {
@@ -288,9 +291,10 @@ pub struct RuntimeFeatures {
 }
 
 impl RuntimeFeatures {
+    /// Make a new [`RuntimeFeatures`]
     #[inline]
-    pub fn new() -> RuntimeFeatures {
-        RuntimeFeatures {
+    pub fn new() -> Self {
+        Self {
             exepath: PathBuf::new(),
             exe_still_exists: true,
         }
@@ -336,6 +340,7 @@ pub struct CDriverMsgs<'a> {
 }
 
 impl CDriverMsgs<'_> {
+    /// Make a new [`CDriverMsgs`] from a received [`ReplyIrp`]
     #[inline]
     pub fn new(irp: &ReplyIrp) -> CDriverMsgs {
         CDriverMsgs {

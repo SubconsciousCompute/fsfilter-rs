@@ -1186,7 +1186,7 @@ VOID AddRemProcessRoutine(HANDLE ParentId, HANDLE ProcessId, BOOLEAN Create)
         if (!NT_SUCCESS(hr))
         {
             DbgPrint("!!! snFilter: Failed to open process: %#010x.\n", hr);
-            hr = ZwClose(procHandleParent);
+            hr = FltClose(procHandleParent);
             if (!NT_SUCCESS(hr))
             {
                 DbgPrint("!!! snFilter: Failed to close process: %#010x.\n", hr);
@@ -1212,13 +1212,13 @@ VOID AddRemProcessRoutine(HANDLE ParentId, HANDLE ProcessId, BOOLEAN Create)
 
         DbgPrint("!!! snFilter: New Process, parent: %wZ. Pid: %d\n", parentName, (ULONG)(ULONG_PTR)ParentId);
 
-        hr = ZwClose(procHandleParent);
+        hr = FltClose(procHandleParent);
         if (!NT_SUCCESS(hr))
         {
             DbgPrint("!!! snFilter: Failed to close process: %#010x.\n", hr);
             return;
         }
-        hr = ZwClose(procHandleProcess);
+        hr = FltClose(procHandleProcess);
         if (!NT_SUCCESS(hr))
         {
             DbgPrint("!!! snFilter: Failed to close process: %#010x.\n", hr);
