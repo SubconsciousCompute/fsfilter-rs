@@ -41,7 +41,7 @@ fn main() {
         loop {
             if let Ok(mut io_message) = rx_iomsgs.recv() {
                 io_message.exepath();
-                write!(lock, "{:?}", io_message);
+                write!(lock, "{io_message:?}");
             }
         }
     }

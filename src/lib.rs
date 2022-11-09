@@ -1,6 +1,6 @@
 //! # minifilter-rs
 //!
-//! Checkout the [README](https://github.com/sn99/fsfilter-rs/blob/master/README.md) too at github.
+//! Checkout the [README](https://github.com/SubconsciousCompute/fsfilter-rs/blob/master/README.md) too at github.
 //!
 //! **Use `cargo doc --no-deps --document-private-items --open` to read Documentation**
 //!
@@ -9,14 +9,14 @@
 //! <details>
 //!     <summary>Table of Contents</summary>
 //!
-//! - [Minifilter Driver](https://!github.com/sn99/fsfilter-rs#minifilter-driver)
-//!     - [Building Driver](https://!github.com/sn99/fsfilter-rs#building-driver)
-//!     - [Installing Driver](https://!github.com/sn99/fsfilter-rs#building-driver)
-//!     - [Loading/Removing Driver](https://!github.com/sn99/fsfilter-rs#loadingremoving-driver)
-//! - [Rust Application](https://!github.com/sn99/fsfilter-rs#rust-application)
-//!     - [Building Rust App](https://!github.com/sn99/fsfilter-rs#building-rust-app)
-//!     - [Running Rust App](https://!github.com/sn99/fsfilter-rs#running-rust-app)
-//! - [What and the How](https://!github.com/sn99/fsfilter-rs#what-and-the-how)
+//! - [Minifilter Driver](https://!github.com/SubconsciousCompute/fsfilter-rs#minifilter-driver)
+//!     - [Building Driver](https://!github.com/SubconsciousCompute/fsfilter-rs#building-driver)
+//!     - [Installing Driver](https://!github.com/SubconsciousCompute/fsfilter-rs#building-driver)
+//!     - [Loading/Removing Driver](https://!github.com/SubconsciousCompute/fsfilter-rs#loadingremoving-driver)
+//! - [Rust Application](https://!github.com/SubconsciousCompute/fsfilter-rs#rust-application)
+//!     - [Building Rust App](https://!github.com/SubconsciousCompute/fsfilter-rs#building-rust-app)
+//!     - [Running Rust App](https://!github.com/SubconsciousCompute/fsfilter-rs#running-rust-app)
+//! - [What and the How](https://!github.com/SubconsciousCompute/fsfilter-rs#what-and-the-how)
 //!
 //! </details>
 //!
@@ -74,7 +74,7 @@
 //! Filter Name                     Num Instances    Altitude    Frame
 //! ------------------------------  -------------  ------------  -----
 //! bindflt                                 1       409800         0
-//! snFilter                                4       378781         0   //! our minifilter driver
+//! snFilter                                4       378781         0   //our minifilter driver
 //! WdFilter                                5       328010         0
 //! storqosflt                              0       244000         0
 //! wcifs                                   0       189900         0
@@ -119,19 +119,19 @@
 //! ```
 //!
 //! We end the process using `ctrl + c` in the example video:
-//! ![video](https://!github.com/sn99/fsfilter-rs/readme_resources/example.gif)
+//! ![video](https://!github.com/SubconsciousCompute/fsfilter-rs/readme_resources/example.gif)
 //!
 //! #### NOTE:
 //!
 //! - Might fail if not ran with administrative privileges
-//! - You need to [load and start the driver]((https://!github.com/sn99/fsfilter-rs#loadingremoving-driver)) before running
+//! - You need to [load and start the driver]((https://!github.com/SubconsciousCompute/fsfilter-rs#loadingremoving-driver)) before running
 //!   the program or else it will error out
 //!
 //! ## What and the How
 //!
 //! We basically share definition between the mini-filter and Rust using `#[repr(C)]`
 //!
-//! ![shared_def](https://!github.com/sn99/fsfilter-rs/readme_resources/shared_def.png)
+//! ![`shared_def`](https://!github.com/SubconsciousCompute/fsfilter-rs/readme_resources/shared_def.png)
 //!
 //! We use [channels](https://!doc.rust-lang.org/std/sync/mpsc/fn.channel.html) to process
 //! all [IRPs](https://!docs.microsoft.com/en-us/windows-hardware/drivers/ifs/irps-are-different-from-fast-i-o).

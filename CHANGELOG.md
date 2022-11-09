@@ -1,3 +1,10 @@
+# v0.5.0
+
+- Replace `ZwClose` with `FltClose` in minifilter to solve potential memory leak
+- Remove unused dependencies and add categories to `Cargo.toml`
+- Vastly improve documentation
+- Refactor code to be more readable and conscience
+
 # v0.4.0
 
 - Improve performance even further

@@ -21,7 +21,9 @@ You can also build using [EWDK](EWDKbuild.md) if you don't want to install Visua
 ### RUNNING EXAMPLE
 
 Use `cargo run --bin minifilter --release` to run the example application or just [run the `.exe` provided in
-releases](https://github.com/SubconsciousCompute/fsfilter-rs/releases/latest/download/minifilter.exe).
+releases](https://github.com/SubconsciousCompute/fsfilter-rs/releases/latest/download/minifilter.exe) as administrator (
+for some reason the new default terminal on 2H22 is very, very slow
+).
 
 The program starts to print the `IOMessage` which is defined like:
 

@@ -1,8 +1,7 @@
 //! Low-level communication with the minifilter.
 
-use core::ffi::c_void;
 use std::mem;
-use std::os::raw::*;
+use std::os::raw::{c_ulong, c_ulonglong};
 use std::ptr;
 
 use sysinfo::{get_current_pid, Pid, PidExt};
@@ -19,6 +18,7 @@ use crate::driver_comm::DriveType::{
     DriveCDRom, DriveFixed, DriveNoRootDir, DriveRamDisk, DriveRemote, DriveRemovable, DriveUnknown,
 };
 use crate::driver_comm::IrpMajorOp::{IrpCreate, IrpNone, IrpRead, IrpSetInfo, IrpWrite};
+use crate::shared_def;
 use crate::shared_def::ReplyIrp;
 
 type BufPath = [wchar_t; 520];
@@ -72,14 +72,20 @@ impl Driver {
     }
 
     /// The user-mode running app (this one) has to register itself to the driver.
+    ///
+    /// # Panics
+    /// This fn panics if it is unable to get the current pid.
+    ///
+    /// # Errors
+    /// This fn returns an error if it is unable to register itself to the minifilter.
     #[inline]
     pub fn driver_set_app_pid(&self) -> Result<(), windows::core::Error> {
-        let buf = Driver::string_to_commessage_buffer(r"\Device\harddiskVolume");
+        let buf = Self::string_to_commessage_buffer(r"\Device\harddiskVolume");
 
         let mut get_irp_msg: DriverComMessage = DriverComMessage {
             r#type: DriverComMessageType::SetPid as c_ulong,
             pid: get_current_pid().unwrap().as_u32() as c_ulong,
-            gid: 140713315094899,
+            gid: 140_713_315_094_899,
             path: buf, //wch!("\0"),
         };
         let mut tmp: u32 = 0;
@@ -87,39 +93,49 @@ impl Driver {
         unsafe {
             FilterSendMessage(
                 self.handle,
-                ptr::addr_of_mut!(get_irp_msg) as *mut c_void,
+                ptr::addr_of_mut!(get_irp_msg).cast::<std::ffi::c_void>(),
                 mem::size_of::<DriverComMessage>() as c_ulong,
                 None,
                 0,
-                &mut tmp as *mut u32,
+                std::ptr::addr_of_mut!(tmp),
             )
         }
     }
 
-    /// Try to open a com canal with the minifilter before this app is registered. This fn can fail
-    /// is the minifilter is unreachable:
+    /// Try to open a com canal with the minifilter before this app is registered.
+    ///
+    /// # Panics
+    /// This function will panic if the minifilter port has any nul value (except the last one)
+    /// in it's name.
+    ///
+    /// # Errors
+    /// This fn can fail is the minifilter is unreachable:
     ///
     /// * if it is not started (try `sc start snFilter` first
     /// * if a connection is already established: it can accepts only one at a time.
     ///
-    /// In that case the Error is raised by the OS (windows::Error) and is generally readable.
+    /// In that case the Error is raised by the OS (`windows::Error`) and is generally readable.
     #[inline]
-    pub fn open_kernel_driver_com() -> Result<Driver, windows::core::Error> {
-        let _com_port_name = U16CString::from_str("\\snFilter").unwrap().into_raw();
-        let _handle;
+    pub fn open_kernel_driver_com() -> Result<Self, windows::core::Error> {
+        let com_port_name = U16CString::from_str("\\snFilter").unwrap().into_raw();
+        let handle;
         unsafe {
-            _handle = FilterConnectCommunicationPort(PCWSTR(_com_port_name), 0, None, 0, None)?
+            handle = FilterConnectCommunicationPort(PCWSTR(com_port_name), 0, None, 0, None)?;
         }
-        let res = Driver { handle: _handle };
+        let res = Self { handle };
         Ok(res)
     }
 
-    /// Ask the driver for a [ReplyIrp], if any. This is a low-level function and the returned object
+    /// Ask the driver for a [`ReplyIrp`], if any. This is a low-level function and the returned object
     /// uses C pointers. Managing C pointers requires a special care, because of the Rust timelines.
-    /// [ReplyIrp] is optional since the minifilter returns null if there is no new activity.
+    /// [`ReplyIrp`] is optional since the minifilter returns null if there is no new activity.
+    ///
+    /// # Panics
+    /// This fn panics if it is unable to get the current pid or cannot get driver message from the
+    /// minifilter.
     #[inline]
     pub fn get_irp(&self, vecnew: &mut Vec<u8>) -> Option<ReplyIrp> {
-        let mut get_irp_msg = Driver::build_irp_msg(
+        let mut get_irp_msg = Self::build_irp_msg(
             DriverComMessageType::GetOps,
             get_current_pid().unwrap(),
             0,
@@ -130,11 +146,11 @@ impl Driver {
         unsafe {
             FilterSendMessage(
                 self.handle,
-                ptr::addr_of_mut!(get_irp_msg) as *mut c_void,
+                ptr::addr_of_mut!(get_irp_msg).cast::<std::ffi::c_void>(),
                 mem::size_of::<DriverComMessage>() as c_ulong,
-                Option::from(vecnew.as_ptr() as *mut c_void),
+                Option::from(vecnew.as_mut_ptr().cast::<std::ffi::c_void>()),
                 65536_u32,
-                ptr::addr_of_mut!(tmp) as *mut u32,
+                ptr::addr_of_mut!(tmp).cast::<u32>(),
             )
             .expect("Cannot get driver message from driver");
         }
@@ -142,7 +158,8 @@ impl Driver {
         if tmp != 0 {
             let reply_irp: ReplyIrp;
             unsafe {
-                reply_irp = std::ptr::read_unaligned(vecnew.as_ptr() as *const ReplyIrp);
+                reply_irp =
+                    std::ptr::read_unaligned(vecnew.as_ptr().cast::<shared_def::ReplyIrp>());
             }
             return Some(reply_irp);
         }
@@ -150,7 +167,7 @@ impl Driver {
     }
 
     /// Ask the minifilter to kill all pids related to the given *gid*. Pids are killed in driver-mode
-    /// by calls to NtClose.
+    /// by calls to `NtClose`.
     #[inline]
     pub fn try_kill(&self, gid: c_ulonglong) -> Result<HRESULT, windows::core::Error> {
         let mut killmsg = DriverComMessage {
@@ -165,11 +182,11 @@ impl Driver {
         unsafe {
             FilterSendMessage(
                 self.handle,
-                ptr::addr_of_mut!(killmsg) as *mut c_void,
+                ptr::addr_of_mut!(killmsg).cast::<std::ffi::c_void>(),
                 mem::size_of::<DriverComMessage>() as c_ulong,
-                Option::from(ptr::addr_of_mut!(res) as *mut c_void),
+                Option::from(ptr::addr_of_mut!(res).cast::<std::ffi::c_void>()),
                 4_u32,
-                ptr::addr_of_mut!(res_size) as *mut u32,
+                ptr::addr_of_mut!(res_size).cast::<u32>(),
             )?;
         }
 
@@ -178,7 +195,7 @@ impl Driver {
 
     #[inline]
     fn string_to_commessage_buffer(bufstr: &str) -> BufPath {
-        let temp = U16CString::from_str(&bufstr).unwrap();
+        let temp = U16CString::from_str(bufstr).unwrap();
         let mut buf: BufPath = [0; 520];
         for (i, c) in temp.as_slice_with_nul().iter().enumerate() {
             buf[i] = *c as wchar_t;
@@ -198,7 +215,7 @@ impl Driver {
             r#type: commsgtype as c_ulong, // SetPid
             pid: pid.as_u32() as c_ulong,
             gid,
-            path: Driver::string_to_commessage_buffer(path),
+            path: Self::string_to_commessage_buffer(path),
         }
     }
 }
@@ -223,14 +240,14 @@ pub enum IrpMajorOp {
 }
 
 impl IrpMajorOp {
-    pub fn from_byte(b: u8) -> IrpMajorOp {
+    #[inline]
+    pub fn from_byte(b: u8) -> Self {
         match b {
-            0 => IrpNone,
+            // 0 => IrpNone,
             1 => IrpRead,
             2 => IrpWrite,
             3 => IrpSetInfo,
-            4 => IrpCreate,
-            5 => IrpCreate,
+            4 | 5 => IrpCreate,
             _ => IrpNone,
         }
     }
@@ -257,18 +274,22 @@ pub enum DriveType {
 }
 
 impl DriveType {
+    /// Determines whether a disk drive is a removable, fixed, CD-ROM, RAM disk, or network drive.
+    ///
+    /// # Panics
+    /// Will panic if drive path is invalid.
     #[inline]
-    pub fn from_filepath(filepath: String) -> DriveType {
+    pub fn from_filepath(filepath: &str) -> Self {
         let mut drive_type = 1u32;
         if !filepath.is_empty() {
-            let drive_path = &filepath[..(filepath.find('\\').unwrap() + 1)];
+            let drive_path = &filepath[..=filepath.find('\\').unwrap()];
             unsafe {
                 drive_type = GetDriveTypeA(PCSTR(String::from(drive_path).as_ptr()));
             }
         }
         match drive_type {
             0 => DriveUnknown,
-            1 => DriveNoRootDir,
+            // 1 => DriveNoRootDir,
             2 => DriveRemovable,
             3 => DriveFixed,
             4 => DriveRemote,
