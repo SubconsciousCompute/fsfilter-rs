@@ -1,3 +1,9 @@
+# v0.5.5
+
+- Upgrade `C` standard to `C11`
+- General stability improvements around IRQL, DriverEntry, etc
+- Update `sysinfo` to `0.27.1`
+
 # v0.5.0
 
 - Replace `ZwClose` with `FltClose` in minifilter to solve potential memory leak

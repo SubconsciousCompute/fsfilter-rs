@@ -109,7 +109,8 @@ BOOLEAN DriverData::RemoveProcess(ULONG ProcessId)
     return ret;
 }
 
-BOOLEAN DriverData::RecordNewProcess(PUNICODE_STRING ProcessName, ULONG ProcessId, ULONG ParentPid)
+_IRQL_raises_(DISPATCH_LEVEL) BOOLEAN DriverData::RecordNewProcess(PUNICODE_STRING ProcessName, ULONG ProcessId,
+                                                                   ULONG ParentPid)
 {
     BOOLEAN ret = FALSE;
     KIRQL irql = KeGetCurrentIrql();
