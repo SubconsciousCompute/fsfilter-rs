@@ -26,10 +26,10 @@ Environment:
 
 EXTERN_C_START
 
+DRIVER_INITIALIZE DriverEntry;
+
 NTSTATUS
 DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath);
-
-DRIVER_INITIALIZE DriverEntry;
 
 EXTERN_C_END
 
@@ -74,6 +74,8 @@ CONST FLT_REGISTRATION FilterRegistration = {
 //    Filter initialization and unload routines.
 //
 ////////////////////////////////////////////////////////////////////////////
+
+DRIVER_INITIALIZE DriverEntry;
 
 NTSTATUS
 DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath)
@@ -972,9 +974,12 @@ FLT_POSTOP_CALLBACK_STATUS FSProcessPostReadSafe(_Inout_ PFLT_CALLBACK_DATA Data
         {
             __try
             {
-                entry->data.Entropy = shannonEntropy((PUCHAR)ReadBuffer, Data->IoStatus.Information);
-                entry->data.MemSizeUsed = Data->IoStatus.Information;
-                entry->data.isEntropyCalc = TRUE;
+                if (entry != nullptr)
+                {
+                    entry->data.Entropy = shannonEntropy((PUCHAR)ReadBuffer, Data->IoStatus.Information);
+                    entry->data.MemSizeUsed = Data->IoStatus.Information;
+                    entry->data.isEntropyCalc = TRUE;
+                }
                 if (IS_DEBUG_IRP)
                     DbgPrint("!!! snFilter: Adding entry to irps IRP_MJ_READ\n");
                 if (driverData->AddIrpMessage(entry))
@@ -1141,7 +1146,7 @@ static NTSTATUS GetProcessNameByHandle(_In_ HANDLE ProcessHandle, _Out_ PUNICODE
 }
 
 // new code process recording
-VOID AddRemProcessRoutine(HANDLE ParentId, HANDLE ProcessId, BOOLEAN Create)
+_IRQL_raises_(DISPATCH_LEVEL) VOID AddRemProcessRoutine(HANDLE ParentId, HANDLE ProcessId, BOOLEAN Create)
 {
     if (commHandle->CommClosed)
         return;

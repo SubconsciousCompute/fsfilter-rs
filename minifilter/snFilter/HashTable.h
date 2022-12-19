@@ -19,7 +19,10 @@ struct HashNode
     void *operator new(size_t size)
     {
         void *ptr = ExAllocatePool2(POOL_FLAG_NON_PAGED, size, 'RW');
-        memset(ptr, 0, size);
+        if (ptr != 0)
+        {
+            memset(ptr, 0, size);
+        }
         return ptr;
     }
 
