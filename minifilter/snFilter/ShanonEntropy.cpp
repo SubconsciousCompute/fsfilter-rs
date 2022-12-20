@@ -1,5 +1,3 @@
-// #pragma warning(disable : 28110)
-
 #include "ShanonEntropy.h"
 
 constexpr DOUBLE M_LOG2E = 1.4426950408889634;
@@ -17,10 +15,8 @@ _Kernel_float_used_ DOUBLE shannonEntropy(PUCHAR buffer, size_t size)
         bucketByteVals[buffer[i]]++;
     }
 
-    KFLOATING_SAVE SaveState;
     __try
     {
-        KeSaveFloatingPointState(&SaveState);
         for (ULONG i = 0; i < MAX_BYTE_SIZE; i++)
         {
             if (bucketByteVals[i] != 0)
@@ -33,7 +29,7 @@ _Kernel_float_used_ DOUBLE shannonEntropy(PUCHAR buffer, size_t size)
     }
     __finally
     {
-        KeRestoreFloatingPointState(&SaveState);
     }
+
     return entropy;
 }
