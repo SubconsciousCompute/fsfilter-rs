@@ -39,7 +39,7 @@
     <ConfigurationType>Driver</ConfigurationType>
     <DriverType>WDM</DriverType>
     <PreferredToolArchitecture>x64</PreferredToolArchitecture>
-    <Driver_SpectreMitigation>Spectre</Driver_SpectreMitigation>
+    <Driver_SpectreMitigation>false</Driver_SpectreMitigation>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
@@ -49,7 +49,7 @@
     <ConfigurationType>Driver</ConfigurationType>
     <DriverType>WDM</DriverType>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <Driver_SpectreMitigation>Spectre</Driver_SpectreMitigation>
+    <Driver_SpectreMitigation>false</Driver_SpectreMitigation>
     <PreferredToolArchitecture>x64</PreferredToolArchitecture>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />

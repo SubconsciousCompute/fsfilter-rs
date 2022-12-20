@@ -1,3 +1,8 @@
+# v0.6.0
+
+- Fix issue of floating point operations in kernel driver
+- Performance improvements
+
 # v0.5.5
 
 - Upgrade `C` standard to `C11`

@@ -574,7 +574,14 @@ FSProcessPreOperartion(_Inout_ PFLT_CALLBACK_DATA Data, _In_ PCFLT_RELATED_OBJEC
 
         __try
         {
-            newItem->Entropy = shannonEntropy((PUCHAR)writeBuffer, newItem->MemSizeUsed);
+            KFLOATING_SAVE SaveState;
+            NTSTATUS Status = KeSaveFloatingPointState(&SaveState);
+            if (NT_SUCCESS(Status))
+            {
+                newItem->Entropy = shannonEntropy((PUCHAR)writeBuffer, newItem->MemSizeUsed);
+            }
+
+            KeRestoreFloatingPointState(&SaveState);
             newItem->isEntropyCalc = TRUE;
         }
         __except (EXCEPTION_EXECUTE_HANDLER)
@@ -936,7 +943,14 @@ FSProcessPostReadIrp(_Inout_ PFLT_CALLBACK_DATA Data, _In_ PCFLT_RELATED_OBJECTS
     // we catch EXCEPTION_EXECUTE_HANDLER so to prevent crash when calculating
     __try
     {
-        entry->data.Entropy = shannonEntropy((PUCHAR)ReadBuffer, Data->IoStatus.Information);
+
+        KFLOATING_SAVE SaveState;
+        NTSTATUS Status = KeSaveFloatingPointState(&SaveState);
+        if (NT_SUCCESS(Status))
+        {
+            entry->data.Entropy = shannonEntropy((PUCHAR)ReadBuffer, Data->IoStatus.Information);
+        }
+        KeRestoreFloatingPointState(&SaveState);
         entry->data.isEntropyCalc = TRUE;
     }
     __except (EXCEPTION_EXECUTE_HANDLER)
@@ -976,7 +990,13 @@ FLT_POSTOP_CALLBACK_STATUS FSProcessPostReadSafe(_Inout_ PFLT_CALLBACK_DATA Data
             {
                 if (entry != nullptr)
                 {
-                    entry->data.Entropy = shannonEntropy((PUCHAR)ReadBuffer, Data->IoStatus.Information);
+                    KFLOATING_SAVE SaveState;
+                    NTSTATUS Status = KeSaveFloatingPointState(&SaveState);
+                    if (NT_SUCCESS(Status))
+                    {
+                        entry->data.Entropy = shannonEntropy((PUCHAR)ReadBuffer, Data->IoStatus.Information);
+                    }
+                    KeRestoreFloatingPointState(&SaveState);
                     entry->data.MemSizeUsed = Data->IoStatus.Information;
                     entry->data.isEntropyCalc = TRUE;
                 }
