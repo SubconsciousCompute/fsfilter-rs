@@ -2,12 +2,13 @@
 
 [![Rust](https://github.com/SubconsciousCompute/fsfilter-rs/actions/workflows/rust.yml/badge.svg)](https://github.com/SubconsciousCompute/fsfilter-rs/actions/workflows/rust.yml)
 [![Crates.io](https://img.shields.io/crates/v/fsfilter-rs?style=flat-square)](https://crates.io/crates/fsfilter-rs)
+[![docs.rs](https://img.shields.io/docsrs/fsfilter-rs?style=flat-square)](https://docs.rs/fsfilter-rs/latest/fsfilter_rs/)
 
 A rust library to monitor filesystem and more in windows.
 
 ![shared_def](readme_resources/shared_def.png)
 
-### MINIFILTER
+## MINIFILTER
 
 See [MINIFILTER.md](MINIFILTER.md) for building the minifilter or just [right click install using the `.inf` file
 provided in releases](https://github.com/SubconsciousCompute/fsfilter-rs/releases/latest/download/snFilter.zip).
@@ -18,12 +19,11 @@ You can also build using [EWDK](EWDKbuild.md) if you don't want to install Visua
 
 **NOTE: Enable Loading of Test Signed Drivers by executing `Bcdedit.exe -set TESTSIGNING ON` in administrative cmd.**
 
-### RUNNING EXAMPLE
+## RUNNING EXAMPLE
 
-Use `cargo run --bin minifilter --release` to run the example application or just [run the `.exe` provided in
-releases](https://github.com/SubconsciousCompute/fsfilter-rs/releases/latest/download/minifilter.exe) as administrator (
-for some reason the new default terminal on 2H22 is very, very slow
-).
+Use `cargo run --bin minifilter --release` to run the example application or just [run the `.exe` provided in 
+releases](https://github.com/SubconsciousCompute/fsfilter-rs/releases/latest/download/minifilter.exe) as administrator (for 
+some reason the new default terminal (not the one that opens when you run it as administrator) on 2H22 is very, very slow).
 
 The program starts to print the `IOMessage` which is defined like:
 
@@ -56,6 +56,16 @@ The performance of the minifilter doesn't really exceed `<1%` of the CPU usage (
 running scripts to make multiple temporary files). Although depending on you console if you try running
 `cargo run --bin minifilter --release` you might see spikes reaching `1-3%` but that is because of the console itself (
 comment out the `writeln!` in the bin example) or try changing consoles (maybe run `minifilter.exe` directly).
+
+## MAINTAINERS
+
+Feel free to open issues to ask any questions/queries. You are free to ping the current maintainers.
+
+Currently maintained by the following:
+- [sn99](https://github.com/sn99) (original author)
+
+Previous maintainers:
+- N/A
 
 ## LICENSE
 
