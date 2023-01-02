@@ -1,4 +1,4 @@
-// #pragma warning(disable : 28110)
+#pragma warning(disable : 28110)
 
 #include "ShanonEntropy.h"
 
