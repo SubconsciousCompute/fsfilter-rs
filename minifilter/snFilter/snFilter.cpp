@@ -1,5 +1,6 @@
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "UnreachableCode"
+#pragma warning(disable : 28110)
 /*++
 
 Module Name:
@@ -570,18 +571,11 @@ FSProcessPreOperartion(_Inout_ PFLT_CALLBACK_DATA Data, _In_ PCFLT_RELATED_OBJEC
             return FLT_PREOP_COMPLETE;
         }
         newItem->MemSizeUsed = Data->Iopb->Parameters.Write.Length;
-        // we catch EXCEPTION_EXECUTE_HANDLER so to prevent crash when calculating
 
+        // we catch EXCEPTION_EXECUTE_HANDLER so to prevent crash when calculating
         __try
         {
-            KFLOATING_SAVE SaveState;
-            NTSTATUS Status = KeSaveFloatingPointState(&SaveState);
-            if (NT_SUCCESS(Status))
-            {
-                newItem->Entropy = shannonEntropy((PUCHAR)writeBuffer, newItem->MemSizeUsed);
-            }
-
-            KeRestoreFloatingPointState(&SaveState);
+            newItem->Entropy = shannonEntropy((PUCHAR)writeBuffer, newItem->MemSizeUsed);
             newItem->isEntropyCalc = TRUE;
         }
         __except (EXCEPTION_EXECUTE_HANDLER)
@@ -940,17 +934,11 @@ FSProcessPostReadIrp(_Inout_ PFLT_CALLBACK_DATA Data, _In_ PCFLT_RELATED_OBJECTS
         return FLT_POSTOP_FINISHED_PROCESSING;
     }
     entry->data.MemSizeUsed = (ULONG)Data->IoStatus.Information; // successful read data
+
     // we catch EXCEPTION_EXECUTE_HANDLER so to prevent crash when calculating
     __try
     {
-
-        KFLOATING_SAVE SaveState;
-        NTSTATUS Status = KeSaveFloatingPointState(&SaveState);
-        if (NT_SUCCESS(Status))
-        {
-            entry->data.Entropy = shannonEntropy((PUCHAR)ReadBuffer, Data->IoStatus.Information);
-        }
-        KeRestoreFloatingPointState(&SaveState);
+        entry->data.Entropy = shannonEntropy((PUCHAR)ReadBuffer, Data->IoStatus.Information);
         entry->data.isEntropyCalc = TRUE;
     }
     __except (EXCEPTION_EXECUTE_HANDLER)
@@ -990,13 +978,7 @@ FLT_POSTOP_CALLBACK_STATUS FSProcessPostReadSafe(_Inout_ PFLT_CALLBACK_DATA Data
             {
                 if (entry != nullptr)
                 {
-                    KFLOATING_SAVE SaveState;
-                    NTSTATUS Status = KeSaveFloatingPointState(&SaveState);
-                    if (NT_SUCCESS(Status))
-                    {
-                        entry->data.Entropy = shannonEntropy((PUCHAR)ReadBuffer, Data->IoStatus.Information);
-                    }
-                    KeRestoreFloatingPointState(&SaveState);
+                    entry->data.Entropy = shannonEntropy((PUCHAR)ReadBuffer, Data->IoStatus.Information);
                     entry->data.MemSizeUsed = Data->IoStatus.Information;
                     entry->data.isEntropyCalc = TRUE;
                 }
