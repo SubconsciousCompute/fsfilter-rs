@@ -573,12 +573,27 @@ FSProcessPreOperartion(_Inout_ PFLT_CALLBACK_DATA Data, _In_ PCFLT_RELATED_OBJEC
         newItem->MemSizeUsed = Data->Iopb->Parameters.Write.Length;
 
         // we catch EXCEPTION_EXECUTE_HANDLER so to prevent crash when calculating
-        __try
+        KFLOATING_SAVE SaveState;
+        NTSTATUS Status = KeSaveFloatingPointState(&SaveState);
+        if (NT_SUCCESS(Status))
         {
-            newItem->Entropy = shannonEntropy((PUCHAR)writeBuffer, newItem->MemSizeUsed);
-            newItem->isEntropyCalc = TRUE;
+            __try
+            {
+                newItem->Entropy = shannonEntropy((PUCHAR)writeBuffer, newItem->MemSizeUsed);
+                newItem->isEntropyCalc = TRUE;
+            }
+            __except (EXCEPTION_EXECUTE_HANDLER)
+            {
+                if (IS_DEBUG_IRP)
+                    DbgPrint("!!! snFilter: Failed to calc entropy\n");
+                delete newEntry;
+                // fail the irp request
+                Data->IoStatus.Status = STATUS_INTERNAL_ERROR;
+                Data->IoStatus.Information = 0;
+                return FLT_PREOP_COMPLETE;
+            }
         }
-        __except (EXCEPTION_EXECUTE_HANDLER)
+        else
         {
             if (IS_DEBUG_IRP)
                 DbgPrint("!!! snFilter: Failed to calc entropy\n");
@@ -588,6 +603,7 @@ FSProcessPreOperartion(_Inout_ PFLT_CALLBACK_DATA Data, _In_ PCFLT_RELATED_OBJEC
             Data->IoStatus.Information = 0;
             return FLT_PREOP_COMPLETE;
         }
+        KeRestoreFloatingPointState(&SaveState);
     }
     break;
     case IRP_MJ_SET_INFORMATION: {
@@ -936,12 +952,25 @@ FSProcessPostReadIrp(_Inout_ PFLT_CALLBACK_DATA Data, _In_ PCFLT_RELATED_OBJECTS
     entry->data.MemSizeUsed = (ULONG)Data->IoStatus.Information; // successful read data
 
     // we catch EXCEPTION_EXECUTE_HANDLER so to prevent crash when calculating
-    __try
+    KFLOATING_SAVE SaveState;
+    NTSTATUS Status = KeSaveFloatingPointState(&SaveState);
+    if (NT_SUCCESS(Status))
     {
-        entry->data.Entropy = shannonEntropy((PUCHAR)ReadBuffer, Data->IoStatus.Information);
-        entry->data.isEntropyCalc = TRUE;
+        __try
+        {
+            entry->data.Entropy = shannonEntropy((PUCHAR)ReadBuffer, Data->IoStatus.Information);
+            entry->data.isEntropyCalc = TRUE;
+        }
+        __except (EXCEPTION_EXECUTE_HANDLER)
+        {
+            delete entry;
+            // fail the irp request
+            Data->IoStatus.Status = STATUS_INTERNAL_ERROR;
+            Data->IoStatus.Information = 0;
+            return FLT_POSTOP_FINISHED_PROCESSING;
+        }
     }
-    __except (EXCEPTION_EXECUTE_HANDLER)
+    else
     {
         delete entry;
         // fail the irp request
@@ -949,6 +978,8 @@ FSProcessPostReadIrp(_Inout_ PFLT_CALLBACK_DATA Data, _In_ PCFLT_RELATED_OBJECTS
         Data->IoStatus.Information = 0;
         return FLT_POSTOP_FINISHED_PROCESSING;
     }
+    KeRestoreFloatingPointState(&SaveState);
+
     if (IS_DEBUG_IRP)
         DbgPrint("!!! snFilter: Adding entry to irps IRP_MJ_READ\n");
     if (!driverData->AddIrpMessage(entry))
@@ -974,25 +1005,35 @@ FLT_POSTOP_CALLBACK_STATUS FSProcessPostReadSafe(_Inout_ PFLT_CALLBACK_DATA Data
                                                         NormalPagePriority | MdlMappingNoExecute);
         if (ReadBuffer != NULL)
         {
-            __try
+            KFLOATING_SAVE SaveState;
+            NTSTATUS Status = KeSaveFloatingPointState(&SaveState);
+            if (NT_SUCCESS(Status))
             {
-                if (entry != nullptr)
+                __try
                 {
-                    entry->data.Entropy = shannonEntropy((PUCHAR)ReadBuffer, Data->IoStatus.Information);
-                    entry->data.MemSizeUsed = Data->IoStatus.Information;
-                    entry->data.isEntropyCalc = TRUE;
+                    if (entry != nullptr)
+                    {
+                        entry->data.Entropy = shannonEntropy((PUCHAR)ReadBuffer, Data->IoStatus.Information);
+                        entry->data.MemSizeUsed = Data->IoStatus.Information;
+                        entry->data.isEntropyCalc = TRUE;
+                    }
+                    if (IS_DEBUG_IRP)
+                        DbgPrint("!!! snFilter: Adding entry to irps IRP_MJ_READ\n");
+                    if (driverData->AddIrpMessage(entry))
+                    {
+                        return FLT_POSTOP_FINISHED_PROCESSING;
+                    }
                 }
-                if (IS_DEBUG_IRP)
-                    DbgPrint("!!! snFilter: Adding entry to irps IRP_MJ_READ\n");
-                if (driverData->AddIrpMessage(entry))
+                __except (EXCEPTION_EXECUTE_HANDLER)
                 {
-                    return FLT_POSTOP_FINISHED_PROCESSING;
+                    status = STATUS_INTERNAL_ERROR;
                 }
             }
-            __except (EXCEPTION_EXECUTE_HANDLER)
+            else
             {
                 status = STATUS_INTERNAL_ERROR;
             }
+            KeRestoreFloatingPointState(&SaveState);
         }
         status = STATUS_INSUFFICIENT_RESOURCES;
     }
