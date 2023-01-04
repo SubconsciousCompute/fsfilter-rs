@@ -1,6 +1,6 @@
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "UnreachableCode"
-#pragma warning(disable : 28110)
+
 /*++
 
 Module Name:
