@@ -9,7 +9,7 @@ Tools, the SDK, and the WDK.
     1. From an Administrator command prompt, run `call "D:\LaunchBuildEnv.cmd"`
     2. Followed by `msbuild RWatch.sln /m /p:configuration=Release /p:platform=x64 /p:RunCodeAnalysis=false`
 
-The next steps are same as [MINIFILTER.md](MINIFILTER.md).
+The next steps are the same as [MINIFILTER.md](MINIFILTER.md).
 
 ## References
 

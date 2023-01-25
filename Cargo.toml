@@ -1,6 +1,6 @@
 [package]
 name = "fsfilter-rs"
-version = "0.6.0"
+version = "0.7.0"
 edition = "2021"
 authors = ["sn99 <siddharthn.099@gmail.com>"]
 description = "A rust library to monitor filesystem and more in windows"
@@ -21,7 +21,7 @@ num-traits = "0.2.14"
 wchar = "0.11.0"
 
 [dependencies.windows]
-version = "0.43.0"
+version = "0.44.0"
 features = [
     "Win32_Storage_InstallableFileSystems",
     "Win32_Foundation",

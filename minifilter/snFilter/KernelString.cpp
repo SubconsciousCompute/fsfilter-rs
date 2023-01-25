@@ -8,12 +8,12 @@ FSAllocateUnicodeString(_Inout_ PUNICODE_STRING String)
 
 Routine Description:
 
-    This routine allocates a unicode string
+    This routine allocates unicode string
 
 Arguments:
 
-    String - supplies the size of the string to be allocated in the MaximumLength field
-             return the unicode string
+    String - supplies the size of the string to be allocated in the
+MaximumLength field return the unicode string
 
 Return Value:
 
@@ -22,16 +22,16 @@ Return Value:
 
 --*/
 {
-    String->Buffer = (PWCH)ExAllocatePool2(POOL_FLAG_NON_PAGED, String->MaximumLength, 'RW');
+  String->Buffer =
+      (PWCH)ExAllocatePool2(POOL_FLAG_NON_PAGED, String->MaximumLength, 'RW');
 
-    if (String->Buffer == NULL)
-    {
-        return STATUS_INSUFFICIENT_RESOURCES;
-    }
+  if (String->Buffer == NULL) {
+    return STATUS_INSUFFICIENT_RESOURCES;
+  }
 
-    String->Length = 0;
+  String->Length = 0;
 
-    return STATUS_SUCCESS;
+  return STATUS_SUCCESS;
 }
 
 VOID FSFreeUnicodeString(_Inout_ PUNICODE_STRING String)
@@ -39,7 +39,7 @@ VOID FSFreeUnicodeString(_Inout_ PUNICODE_STRING String)
 
 Routine Description:
 
-    This routine frees a unicode string
+    This routine frees unicode string
 
 Arguments:
 
@@ -51,12 +51,11 @@ Return Value:
 
 --*/
 {
-    if (String->Buffer)
-    {
-        ExFreePoolWithTag(String->Buffer, 'RW');
-        String->Buffer = NULL;
-    }
-
-    String->Length = String->MaximumLength = 0;
+  if (String->Buffer) {
+    ExFreePoolWithTag(String->Buffer, 'RW');
     String->Buffer = NULL;
+  }
+
+  String->Length = String->MaximumLength = 0;
+  String->Buffer = NULL;
 }

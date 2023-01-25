@@ -279,6 +279,7 @@ impl DriveType {
     /// # Panics
     /// Will panic if drive path is invalid.
     #[inline]
+    #[must_use]
     pub fn from_filepath(filepath: &str) -> Self {
         let mut drive_type = 1u32;
         if !filepath.is_empty() {

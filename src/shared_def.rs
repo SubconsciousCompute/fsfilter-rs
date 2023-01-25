@@ -1,9 +1,11 @@
 //! Contains all definitions shared between this user-mode app and the minifilter in order to
 //! communicate properly. Those are C-representation of structures sent or received from the minifilter.
 
+use std::cmp::Ordering;
 use std::fmt;
 use std::os::raw::{c_uchar, c_ulong, c_ulonglong, c_ushort};
 use std::path::PathBuf;
+use std::time::SystemTime;
 
 use num_derive::FromPrimitive;
 use serde::{Deserialize, Serialize};
@@ -104,7 +106,7 @@ impl UnicodeString {
 
     /// Get the file path from the `UnicodeString` path and the extension returned by the driver.
     #[inline]
-    pub fn to_string_ext(&self, extension: [wchar_t; 12]) -> String {
+    #[must_use] pub fn to_string_ext(&self, extension: [wchar_t; 12]) -> String {
         unsafe {
             let str_slice = std::slice::from_raw_parts(self.buffer, self.length as usize);
             let mut first_zero_index = 0;
@@ -219,12 +221,14 @@ pub struct IOMessage {
     pub runtime_features: RuntimeFeatures,
     /// Size of the file. Can be equal to -1 if the file path is not found.
     pub file_size: i64,
+    /// Rough time at which the IRP was created
+    pub time: SystemTime,
 }
 
 impl IOMessage {
     /// Make a new [`IOMessage`] from a received [`CDriverMsg`]
     #[inline]
-    pub fn from(c_drivermsg: &CDriverMsg) -> Self {
+    #[must_use] pub fn from(c_drivermsg: &CDriverMsg) -> Self {
         Self {
             extension: c_drivermsg.extension,
             file_id_vsn: c_drivermsg.file_id.VolumeSerialNumber,
@@ -247,6 +251,7 @@ impl IOMessage {
                 Ok(f) => f.len() as i64,
                 Err(_e) => -1,
             },
+            time: SystemTime::now(),
         }
     }
 
@@ -271,12 +276,33 @@ impl IOMessage {
                             String::from_utf8_unchecked(buffer).trim_matches(char::from(0)),
                         );
                         self.runtime_features.exe_still_exists = true;
-                        self.runtime_features.exepath = pathbuf;
+                        self.runtime_features.exepath = pathbuf
+                            .file_name().map_or_else(|| PathBuf::from(r"DEFAULT"), |filename| PathBuf::from(filename.to_string_lossy().to_string()));
                     }
                     // dbg!(is_closed_handle);
                 }
             }
         }
+    }
+}
+
+impl Eq for IOMessage {}
+
+impl Ord for IOMessage {
+    fn cmp(&self, other: &Self) -> Ordering {
+        self.time.cmp(&other.time)
+    }
+}
+
+impl PartialOrd for IOMessage {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.time.cmp(&other.time))
+    }
+}
+
+impl PartialEq for IOMessage {
+    fn eq(&self, other: &Self) -> bool {
+        self.time == other.time
     }
 }
 
@@ -293,7 +319,7 @@ pub struct RuntimeFeatures {
 impl RuntimeFeatures {
     /// Make a new [`RuntimeFeatures`]
     #[inline]
-    pub fn new() -> Self {
+    #[must_use] pub fn new() -> Self {
         Self {
             exepath: PathBuf::new(),
             exe_still_exists: true,
@@ -342,7 +368,7 @@ pub struct CDriverMsgs<'a> {
 impl CDriverMsgs<'_> {
     /// Make a new [`CDriverMsgs`] from a received [`ReplyIrp`]
     #[inline]
-    pub fn new(irp: &ReplyIrp) -> CDriverMsgs {
+    #[must_use] pub fn new(irp: &ReplyIrp) -> CDriverMsgs {
         CDriverMsgs {
             drivermsgs: irp.unpack_drivermsg(),
             index: 0,

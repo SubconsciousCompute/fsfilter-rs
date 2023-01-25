@@ -1,3 +1,4 @@
+#![allow(unused_must_use)]
 use fsfilter_rs::driver_comm;
 use fsfilter_rs::shared_def::{CDriverMsgs, IOMessage};
 use std::io::Write;
@@ -42,6 +43,7 @@ fn main() {
             if let Ok(mut io_message) = rx_iomsgs.recv() {
                 io_message.exepath();
                 write!(lock, "{io_message:?}");
+                lock.flush();
             }
         }
     }

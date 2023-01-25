@@ -1,6 +1,16 @@
+# v0.7.0
+
+- Refactor minifilter
+- Improve printing speed, for [example](src/bin/minifilter.rs)
+- General stability improvements
+- Upgrade `windows-rs` 0.43.0 -> 0.44.0
+- Add rough [`SystemTime`](https://doc.rust-lang.org/std/time/struct.SystemTime.html) to `IPR` messages and compare them
+  using the same
+- Better handling of `exepath` for `IOMessage` IRP
+
 # v0.6.0
 
-- Fix issue of floating point operations in kernel driver
+- Fix an issue of floating point operations in the kernel driver
 - Performance improvements
 
 # v0.5.5
@@ -22,7 +32,7 @@
 - Add `#[inline]` calls to all functions
 - Remove `x86`, `arm` and `arm64` targets from minifilter
 - Upgrade to `c++20` standard for minifilter
-- Reduce wait time for [example](src/bin/minifilter.rs)
+- Reduce waiting time, for [example](src/bin/minifilter.rs)
 
 # v0.3.0
 

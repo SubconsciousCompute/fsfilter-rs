@@ -25,9 +25,9 @@ const PCWSTR ComPortName = L"\\snFilter";
 #define FILE_OBJECT_ID_SIZE 16
 #define FILE_OBJEC_MAX_EXTENSION_SIZE 11
 
-#define MAX_COMM_BUFFER_SIZE 0x10000 // size of the buffer we allocate to receive irp ops from the driver
+#define MAX_COMM_BUFFER_SIZE 0x10000 // the size of the buffer we allocate to receive irp ops from the driver
 #define MAX_OPS_SAVE                                                                                                   \
-    0x1000 // max ops to save, we limit this to prevent driver from filling the non paged memory and crashing the os
+    0x1000 // max ops to save, we limit this to prevent the driver from filling the non-paged memory and crashing the os
 
 // msgs types that the application may send to the driver
 enum COM_MESSAGE_TYPE
@@ -39,7 +39,7 @@ enum COM_MESSAGE_TYPE
     MESSAGE_KILL_GID
 };
 
-// msgs struct that the application send when sending msg to the driver, type member should be one of the
+// msgs struct that the application sends when sending msg to the driver, type member should be one of the
 // COM_MESSAGE_TYPE
 typedef struct _COM_MESSAGE
 {
@@ -106,18 +106,19 @@ typedef struct _DRIVER_MESSAGE
     filePath;      // 16 bytes unicode string - filename, also contains size and max size, buffer is outside the struct
     ULONGLONG Gid; // 8 bytes process gid
     PVOID
-    next; // 8 bytes - next PDRIVER_MESSAGE, we use it to allow adding the fileName to the same buffer, this pointer
+    next; // 8 bytes - next PDRIVER_MESSAGE, we use it to allow adding the fileName to the same buffer, This pointer
     // should point to the next PDRIVER_MESSAGE in buffer (kernel handled)
 
 } DRIVER_MESSAGE, *PDRIVER_MESSAGE;
 
-// header for return buffer from driver on irp ops, has pointer to the first driver message, num ops in the buffer and
+// header for return buffer from the driver on irp ops,
+// has a pointer to the first driver message, num ops in the buffer and
 // readable data size in the buffer
 typedef struct _RWD_REPLY_IRPS
 {
     size_t dataSize; // 8 bytes
     PDRIVER_MESSAGE
-    data; // 8 bytes points to the first IRP driver message, the next DRIVER_MESSAGE is a pointer inside DRIVER_MESSAGE
+    data; // 8 bytes points to the first IRP driver message, The next DRIVER_MESSAGE is a pointer inside DRIVER_MESSAGE
     ULONGLONG num_ops; // 8 bytes
 
     size_t size()
