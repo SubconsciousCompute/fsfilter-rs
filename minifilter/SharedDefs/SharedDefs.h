@@ -20,14 +20,14 @@ Environment :
 
 const PCWSTR ComPortName = L"\\snFilter";
 
-#define MAX_FILE_NAME_LENGTH 520
+#define MAX_FILE_NAME_LENGTH 1024
 #define MAX_FILE_NAME_SIZE (MAX_FILE_NAME_LENGTH * sizeof(WCHAR)) // max length in bytes of files sizes and dir paths
-#define FILE_OBJECT_ID_SIZE 16
-#define FILE_OBJEC_MAX_EXTENSION_SIZE 11
+#define FILE_OBJECT_ID_SIZE 128
+#define FILE_OBJEC_MAX_EXTENSION_SIZE 20
 
 #define MAX_COMM_BUFFER_SIZE 0x10000 // the size of the buffer we allocate to receive irp ops from the driver
 #define MAX_OPS_SAVE                                                                                                   \
-    0x1000 // max ops to save, we limit this to prevent the driver from filling the non-paged memory and crashing the os
+    0x10000 // max ops to save, we limit this to prevent the driver from filling the non-paged memory and crashing the os
 
 // msgs types that the application may send to the driver
 enum COM_MESSAGE_TYPE
