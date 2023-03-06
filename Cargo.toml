@@ -1,6 +1,6 @@
 [package]
 name = "fsfilter-rs"
-version = "0.7.0"
+version = "0.8.0"
 edition = "2021"
 authors = ["sn99 <siddharthn.099@gmail.com>"]
 description = "A rust library to monitor filesystem and more in windows"
@@ -13,7 +13,7 @@ categories = ["development-tools", "os::windows-apis", "filesystem", "api-bindin
 documentation = "https://docs.rs/fsfilter-rs"
 
 [dependencies]
-sysinfo = "0.27.1"
+sysinfo = "0.28.0"
 widestring = "1.0.1"
 serde = { version = "1.0.130", features = ["derive"] }
 num-derive = "0.3"
