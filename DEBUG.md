@@ -48,7 +48,8 @@
     - 🟢 You can also space this workspace in WinDbg by `File -> Save Workspace As...`
 - 🟢 Goto `Debug -> Break`, followed by `File -> Symbol File Path ...` and
   put `C:\Users\sn99\CLionProjects\fsfilter-rs\minifilter\x64\Debug` or wherever the `.pdb` file is (this should be in
-  the same build folder as `.sys` driver file), click on `Reload` and then `Ok`, finally `Debug -> Go`
+  the same build folder as `.sys` driver file), click on `Reload` and then `Ok`,
+  finally `Debug -> Go` ![img.png](readme_resources/symbol_search_path.png), and then `File -> Save Workspace`
 
 ## References
 
