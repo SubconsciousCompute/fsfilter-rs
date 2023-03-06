@@ -1,3 +1,9 @@
+# v0.8.0
+
+- Add [DEBUG](DEBUG.md) docs
+- Upgrade `sysinfo` from 0.27.1 -> 0.28.0
+- Increase capacity of certain objects in minifilter
+
 # v0.7.0
 
 - Refactor minifilter

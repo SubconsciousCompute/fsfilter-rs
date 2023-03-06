@@ -21,9 +21,11 @@ You can also build using [EWDK](EWDKbuild.md) if you don't want to install Visua
 
 ## RUNNING EXAMPLE
 
-Use `cargo run --bin minifilter --release` to run the example application or just [run the `.exe` provided in 
-releases](https://github.com/SubconsciousCompute/fsfilter-rs/releases/latest/download/minifilter.exe) as administrator (for 
-some reason the new default terminal (not the one that opens when you run it as administrator) on 2H22 is very, very slow).
+Use `cargo run --bin minifilter --release` to run the example application or just [run the `.exe` provided in
+releases](https://github.com/SubconsciousCompute/fsfilter-rs/releases/latest/download/minifilter.exe) as administrator(
+for
+some reason the new default terminal (not the one that opens when you run it as administrator) on 2H22 is very, very
+slow).
 
 The program starts to print the `IOMessage` which is defined like:
 
@@ -92,14 +94,22 @@ running scripts to make multiple temporary files). Although depending on you con
 `cargo run --bin minifilter --release` you might see spikes reaching `1-3%` but that is because of the console itself(
 comment out the `writeln!` in the bin example) or try changing consoles (maybe run `minifilter.exe` directly).
 
+## DEBUGGING
+
+See [DEBUG](DEBUG.md) for setting up VMware windows machine debugging
+with [VirtualKD-Redux](https://github.com/4d61726b/VirtualKD-Redux)
+and [WinDbg](https://learn.microsoft.com/en-us/windows-hardware/drivers/debugger/debugging-using-windbg-preview).
+
 ## MAINTAINERS
 
-Feel free to open issues to ask any questions/queries. You are free to ping the current maintainers.
+Feel free to open issues to ask any questions/queries. You're free to ping the current maintainers.
 
 Currently maintained by the following:
+
 - [sn99](https://github.com/sn99) (original author)
 
 Previous maintainers:
+
 - N/A
 
 ## LICENSE

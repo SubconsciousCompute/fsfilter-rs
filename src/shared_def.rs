@@ -106,7 +106,8 @@ impl UnicodeString {
 
     /// Get the file path from the `UnicodeString` path and the extension returned by the driver.
     #[inline]
-    #[must_use] pub fn to_string_ext(&self, extension: [wchar_t; 12]) -> String {
+    #[must_use]
+    pub fn to_string_ext(&self, extension: [wchar_t; 12]) -> String {
         unsafe {
             let str_slice = std::slice::from_raw_parts(self.buffer, self.length as usize);
             let mut first_zero_index = 0;
@@ -228,7 +229,8 @@ pub struct IOMessage {
 impl IOMessage {
     /// Make a new [`IOMessage`] from a received [`CDriverMsg`]
     #[inline]
-    #[must_use] pub fn from(c_drivermsg: &CDriverMsg) -> Self {
+    #[must_use]
+    pub fn from(c_drivermsg: &CDriverMsg) -> Self {
         Self {
             extension: c_drivermsg.extension,
             file_id_vsn: c_drivermsg.file_id.VolumeSerialNumber,
@@ -276,8 +278,10 @@ impl IOMessage {
                             String::from_utf8_unchecked(buffer).trim_matches(char::from(0)),
                         );
                         self.runtime_features.exe_still_exists = true;
-                        self.runtime_features.exepath = pathbuf
-                            .file_name().map_or_else(|| PathBuf::from(r"DEFAULT"), |filename| PathBuf::from(filename.to_string_lossy().to_string()));
+                        self.runtime_features.exepath = pathbuf.file_name().map_or_else(
+                            || PathBuf::from(r"DEFAULT"),
+                            |filename| PathBuf::from(filename.to_string_lossy().to_string()),
+                        );
                     }
                     // dbg!(is_closed_handle);
                 }
@@ -319,7 +323,8 @@ pub struct RuntimeFeatures {
 impl RuntimeFeatures {
     /// Make a new [`RuntimeFeatures`]
     #[inline]
-    #[must_use] pub fn new() -> Self {
+    #[must_use]
+    pub fn new() -> Self {
         Self {
             exepath: PathBuf::new(),
             exe_still_exists: true,
@@ -368,7 +373,8 @@ pub struct CDriverMsgs<'a> {
 impl CDriverMsgs<'_> {
     /// Make a new [`CDriverMsgs`] from a received [`ReplyIrp`]
     #[inline]
-    #[must_use] pub fn new(irp: &ReplyIrp) -> CDriverMsgs {
+    #[must_use]
+    pub fn new(irp: &ReplyIrp) -> CDriverMsgs {
         CDriverMsgs {
             drivermsgs: irp.unpack_drivermsg(),
             index: 0,

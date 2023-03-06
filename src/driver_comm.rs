@@ -241,6 +241,7 @@ pub enum IrpMajorOp {
 
 impl IrpMajorOp {
     #[inline]
+    #[must_use]
     pub fn from_byte(b: u8) -> Self {
         match b {
             // 0 => IrpNone,
