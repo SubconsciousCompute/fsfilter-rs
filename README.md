@@ -8,6 +8,8 @@ A rust library to monitor filesystem and more in windows.
 
 ![shared_def](readme_resources/shared_def.png)
 
+**Also see [poc-windows-rust-filter](https://github.com/SubconsciousCompute/poc-windows-rust-filter) for a pure Rust minifilter.** 
+
 ## MINIFILTER
 
 See [MINIFILTER.md](MINIFILTER.md) for building the minifilter or just [right click install using the `.inf` file
